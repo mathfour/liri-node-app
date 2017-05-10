@@ -1,14 +1,12 @@
 // bmc: todo Grab the data from keys.js
 // bmc: todo Store keys in variables
+// bmc: todo Write function for spotify
+// bmc: todo Write function for movie
+// bmc: todo Write function for do it
+// bmc: todo Figure out how to get more info from some of the inputs
 
-// Make it so liri.js can take in one of the following commands:
-// my-tweets
-//
-// spotify-this-song
-//
-// movie-this
-//
-// do-what-it-says
+'use strict';
+
 var Twitter = require('twitter');
 var spotify = require("spotify");
 var request = require("request");
@@ -24,17 +22,14 @@ var client = new Twitter({
 });
 var params = {screen_name: 'mathfour'};
 
-
-// bmc: Need to change this input to one of the fancy dropdowns
-
-    var whatToDo = [
-    {
-        type: "list",
-        message: "pick one",
-        name: "whatToDo",
-        choices: ["my-tweets", "spotify-this-song", "movie-this", "do-what-it-says"]
-    }
-    ];
+var whatToDo = [
+{
+    type: "list",
+    message: "pick one",
+    name: "whatToDo",
+    choices: ["my-tweets", "spotify-this-song", "movie-this", "do-what-it-says"]
+}
+];
 
 inquirer.prompt(whatToDo).then (function(whatTheyWannaDo) {
     console.log(whatTheyWannaDo);
@@ -71,17 +66,29 @@ function tweetIt() {
             } while (i<10);
         }
     });
-};
+}
 
 function singIt() {
     console.log("launch singIt function");
+    var whatSong = new WhatTitle(song);
 }
 
 function watchIt() {
     console.log("launch watchIt function");
+    var whatMovie = new WhatTitle(movie);
+    inquirer.prompt(whatMovie).then (function(nameOfMovie) {
+        var movieToLookUp = nameOfMovie.whatMovie;
+
+    })
 }
 
 function doIt() {
     console.log("launch doIt function");
+}
+
+function WhatTitle(theTitleName) {
+    this.type = "input";
+    this.message = "what" + theTitleName + "?";
+    this.name = theTitleName;
 }
 
