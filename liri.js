@@ -1,31 +1,27 @@
 // bmc: todo Grab the data from keys.js
 // bmc: todo Store keys in variables
-// bmc: todo Write function for spotify
-// bmc: todo Write function for movie
 // bmc: todo Write function for do it
-// bmc: todo Figure out how to get more info from some of the inputs
 
 'use strict';
-
+// bmc: requirements
 var Twitter = require('twitter');
-// var spotify = require("spotify");
+var SpotifyWebApi = require('spotify-web-api-node');
 var request = require("request");
 var inquirer = require('inquirer');
-
 var twitterKeyFile = require("./keys.js");
-
-var SpotifyWebApi = require('spotify-web-api-node');
-
 var spotifyApi = new SpotifyWebApi();
+var fs = require("fs");
 
+// bmc: Twitter Keys
 var client = new Twitter({
     consumer_key: twitterKeyFile.twitterKeys.consumer_key,
     consumer_secret: twitterKeyFile.twitterKeys.consumer_secret,
     access_token_key: twitterKeyFile.twitterKeys.access_token_key,
     access_token_secret: twitterKeyFile.twitterKeys.access_token_secret
 });
-var params = {screen_name: 'mathfour'};
 
+
+// bmc: array with the inquiry choices
 var whatToDo = [
 {
     type: "list",
@@ -35,31 +31,65 @@ var whatToDo = [
 }
 ];
 
+// bmc: inquiring of the user what they want to do
 inquirer.prompt(whatToDo).then (function(whatTheyWannaDo) {
-    console.log(whatTheyWannaDo);
-    var decision = whatTheyWannaDo.thisIsWhatToDo;
-
-    switch (decision) {
-        case "my-tweets" :
-            tweetIt();
-            // console.log("tweet it");
-            break;
-        case "spotify-this-song" :
-            singIt();
-            // console.log("sing it yo");
-            break;
-        case "movie-this" :
-            watchIt();
-            console.log("watch it yo");
-            break;
-        case "do-what-it-says":
-            doIt();
-            console.log("do it yo");
-            break;
-    }
+    switchAction(whatTheyWannaDo.thisIsWhatToDo)
 });
 
+function switchAction(decision) {
+    if (decision === "do-what-it-says") {
+        fs.readFile("random.txt", "utf8", function (error, data) {
+            console.log(data);
+            var dataArr = data.split(",");
+            var decision = dataArr[0];
+            var title = dataArr[1];
+            // We will then re-display the content as an array for later use.
+            console.log(dataArr[0], dataArr[1]);
+        });
+    }
+    else {
+    var title = getTitle();
+     switch (decision) {
+        case "my-tweets" :
+            getTheTweets(title);
+            break;
+        case "spotify-this-song" :
+            getTheSongInfo(title);
+            break;
+        case "movie-this" :
+            getTheMovieInfo();
+            break;
+    }
+       case "do-what-it-says":
+            doIt();
+            // console.log("do it yo");
+            break;
+    }
+}
+// bmc: variable with the inquiry bits for song/movie title
+var getTheTitle = [
+		{
+		type: "input",
+		message: "For what account/song/movie?",
+		name: "title001"
+		}];
+
+function getTitle() {
+    inquirer.prompt(getTheTitle).then (function (titleGuts) {
+            return titleGuts.title001;
+            // getTheSongInfo(titleGuts.title001);
+        });
+}
+
+// bmc: get the tweets and display them from@MathFour
 function tweetIt() {
+    inquirer.prompt(getTheTitle).then (function (titleGuts) {
+            getTheSongInfo(titleGuts.title001);
+            });
+}
+
+function getTheTweets(account) {
+    var params = {screen_name: account};
     client.get('statuses/user_timeline', params, function(error, tweets, response) {
         var i=0;
         if (!error) {
@@ -71,20 +101,16 @@ function tweetIt() {
         }
     });
 }
-	var getTheTitle = [	
-		{
-		type: "input",
-		message: "which title do you want?",
-		name: "title001"
-		}];
 
+
+// bmc: prompt for song and launch function to get the song info
 function singIt() {
-    	// console.log("launch singIt function");
 	    inquirer.prompt(getTheTitle).then (function (titleGuts) {
             getTheSongInfo(titleGuts.title001);
             });
-        };
+        }
 
+// bmc: function to get the information for a song
 function getTheSongInfo(song) {
     spotifyApi.searchTracks(song).then(function (data) {
         var checking = data.body.tracks.items[0].album.artists[0].name;
@@ -106,24 +132,54 @@ function getTheSongInfo(song) {
     });
 }
 
-function getTheMovieInfo(movie) {
-
-}
-
+// bmc: ask user for movie title and launch function to get movie info
 function watchIt() {
     console.log("launch watchIt function");
     inquirer.prompt(getTheTitle).then (function (titleGuts) {
+        console.log(titleGuts.title001.trim());
+        if (titleGuts.title001.trim() !== ""){
             getTheMovieInfo(titleGuts.title001);
+        }
+        else {
+            getTheMovieInfo("mr nobody");
+        }
     });
-    }
+}
+
+// bmc: function to get the information for a movie
+function getTheMovieInfo(movie) {
+/*  * Title of the movie.
+    * Year the movie came out.
+    * IMDB Rating of the movie.
+    * Country where the movie was produced.
+    * Language of the movie.
+    * Plot of the movie.
+    * Actors in the movie.
+    * Rotten Tomatoes URL. */
+
+var url = "http://www.omdbapi.com/?t=" + movie;
+request(url, function(error, response, body) {
+
+  if (!error && response.statusCode === 200) {
+
+    console.log("The movie's title is " + JSON.parse(body).Title);
+    console.log("The movie came out in " + JSON.parse(body).Year);
+    console.log("The movie's IMDB rating is " + JSON.parse(body).imdbRating);
+    console.log("The movie's was made in " + JSON.parse(body).Country);
+    console.log("The movie was filmed in " + JSON.parse(body).Language);
+    console.log("The plot is: " + JSON.parse(body).Plot);
+    console.log("The stars of the movie are " + JSON.parse(body).Actors);
+    // console.log("Find out more on the website: " + JSON.parse(body).Website);
+    console.log("Find out more on the website: " + JSON.parse(body).Website);
+  }
+});
+}
 
 function doIt() {
-    console.log("launch doIt function");
-}
 
-function WhatTitle(theTitleName) {
-    this.type = "input";
-    this.message = "what" + theTitleName + "?";
-    this.name = theTitleName;
-}
 
+
+    inquirer.prompt(getTheTitle).then (function (titleGuts) {
+            getTheSongInfo(titleGuts.title001);
+            });
+}
