@@ -38,27 +38,35 @@ inquirer.prompt(whatToDo).then (function(whatTheyWannaDo) {
 function switchAction(decision) {
     var title = "";
     if (decision === "do-what-it-says") {
+        console.log("doing what it says");
         fs.readFile("random.txt", "utf8", function (error, data) {
             var dataArr = data.split(",");
             decision = dataArr[0];
             title = dataArr[1];
         });
+        callbackGuts(title);
     }
     else {
         title = getTitle(callbackGuts);
-        console.log("in the else");
     }
-    function callbackGuts(title){
-        console.log("starting callbackguts");
+    function callbackGuts(inputThing){
+        if (typeof inputThing === "string"){
+            title = inputThing;
+        }
+        else {
+            title = inputThing.title001;
+        }
+        console.log("the title is ", title);
         switch (decision) {
             case "my-tweets" :
-                console.log("trying to get tweets");
                 getTheTweets(title);
                 break;
             case "spotify-this-song" :
+                console.log("spoifying song");
                 getTheSongInfo(title);
                 break;
             case "movie-this" :
+                console.log("moving title");
                if (title === ""){
                     title = "mr nobody";
                 }
@@ -77,23 +85,23 @@ var getTheTitle = [
     }];
 
 function getTitle(callbackGuts) {
-    inquirer.prompt(getTheTitle).then (callbackGuts)
-
-            // function (titleGuts) {
-            // return titleGuts.title001;
-            // getTheSongInfo(titleGuts.title001)
+    inquirer.prompt(getTheTitle).then(callbackGuts)
 }
 
 function getTheTweets(account) {
-    var params = {screen_name: account};
+    var params = {screen_name: account.title001};
     client.get('statuses/user_timeline', params, function(error, tweets, response) {
         var i=0;
         if (!error) {
-            console.log("The last 20 tweets for @" + account + " are: ");
+            console.log("----------------------------");
+            console.log("The last 20 tweets for @" + account.title001 + " are: ");
+            console.log("----------------------------");
+            console.log("The last 20 tweets for @" + account.title001 + " are: ");
             do{
                 console.log(i+1 + ". " + tweets[i].text);
                 i++;
             } while (i<20);
+            console.log("----------------------------");
         }
     });
 }
