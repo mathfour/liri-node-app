@@ -45,22 +45,28 @@ function switchAction(decision) {
         });
     }
     else {
-        title = getTitle();
+        title = getTitle(callbackGuts);
+        console.log("in the else");
     }
-    switch (decision) {
-        case "my-tweets" :
-            getTheTweets(title);
-            break;
-        case "spotify-this-song" :
-            getTheSongInfo(title);
-            break;
-        case "movie-this" :
-            if (title === ""){
-                title = "mr nobody";
-            }
-            getTheMovieInfo(title);
-            break;
+    function callbackGuts(title){
+        console.log("starting callbackguts");
+        switch (decision) {
+            case "my-tweets" :
+                console.log("trying to get tweets");
+                getTheTweets(title);
+                break;
+            case "spotify-this-song" :
+                getTheSongInfo(title);
+                break;
+            case "movie-this" :
+               if (title === ""){
+                    title = "mr nobody";
+                }
+               getTheMovieInfo(title);
+                break;
+        }
     }
+
 }
 // bmc: variable with the inquiry bits for song/movie title
 var getTheTitle = [
@@ -70,11 +76,12 @@ var getTheTitle = [
 		name: "title001"
     }];
 
-function getTitle() {
-    inquirer.prompt(getTheTitle).then (function (titleGuts) {
-            return titleGuts.title001;
-            // getTheSongInfo(titleGuts.title001);
-        });
+function getTitle(callbackGuts) {
+    inquirer.prompt(getTheTitle).then (callbackGuts)
+
+            // function (titleGuts) {
+            // return titleGuts.title001;
+            // getTheSongInfo(titleGuts.title001)
 }
 
 function getTheTweets(account) {
