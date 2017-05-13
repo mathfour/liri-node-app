@@ -31,7 +31,7 @@ var whatToDo = [
 }];
 
 // bmc: inquiring of the user what they want to do
-inquirer.prompt(whatToDo).then (function(whatTheyWannaDo) {
+inquirer.prompt(whatToDo).then(function(whatTheyWannaDo) {
     switchAction(whatTheyWannaDo.thisIsWhatToDo)
 });
 
@@ -43,8 +43,9 @@ function switchAction(decision) {
             var dataArr = data.split(",");
             decision = dataArr[0];
             title = dataArr[1];
+
+            callbackGuts(title);
         });
-        callbackGuts(title);
     }
     else {
         title = getTitle(callbackGuts);
@@ -56,17 +57,14 @@ function switchAction(decision) {
         else {
             title = inputThing.title001;
         }
-        console.log("the title is ", title);
         switch (decision) {
             case "my-tweets" :
                 getTheTweets(title);
                 break;
             case "spotify-this-song" :
-                console.log("spoifying song");
                 getTheSongInfo(title);
                 break;
             case "movie-this" :
-                console.log("moving title");
                if (title === ""){
                     title = "mr nobody";
                 }
@@ -89,14 +87,14 @@ function getTitle(callbackGuts) {
 }
 
 function getTheTweets(account) {
-    var params = {screen_name: account.title001};
+    var params = {screen_name: account};
     client.get('statuses/user_timeline', params, function(error, tweets, response) {
         var i=0;
         if (!error) {
             console.log("----------------------------");
-            console.log("The last 20 tweets for @" + account.title001 + " are: ");
+            console.log("The last 20 tweets for @" + account + " are: ");
             console.log("----------------------------");
-            console.log("The last 20 tweets for @" + account.title001 + " are: ");
+            console.log("The last 20 tweets for @" + account + " are: ");
             do{
                 console.log(i+1 + ". " + tweets[i].text);
                 i++;
