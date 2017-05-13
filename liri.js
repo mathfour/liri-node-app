@@ -28,8 +28,7 @@ var whatToDo = [
     message: "pick one",
     name: "thisIsWhatToDo",
     choices: ["my-tweets", "spotify-this-song", "movie-this", "do-what-it-says"]
-}
-];
+}];
 
 // bmc: inquiring of the user what they want to do
 inquirer.prompt(whatToDo).then (function(whatTheyWannaDo) {
@@ -37,19 +36,18 @@ inquirer.prompt(whatToDo).then (function(whatTheyWannaDo) {
 });
 
 function switchAction(decision) {
+    var title = "";
     if (decision === "do-what-it-says") {
         fs.readFile("random.txt", "utf8", function (error, data) {
-            console.log(data);
             var dataArr = data.split(",");
-            var decision = dataArr[0];
-            var title = dataArr[1];
-            // We will then re-display the content as an array for later use.
-            console.log(dataArr[0], dataArr[1]);
+            decision = dataArr[0];
+            title = dataArr[1];
         });
     }
     else {
-    var title = getTitle();
-     switch (decision) {
+        title = getTitle();
+    }
+    switch (decision) {
         case "my-tweets" :
             getTheTweets(title);
             break;
@@ -57,22 +55,20 @@ function switchAction(decision) {
             getTheSongInfo(title);
             break;
         case "movie-this" :
-            getTheMovieInfo();
-            break;
-    }
-       case "do-what-it-says":
-            doIt();
-            // console.log("do it yo");
+            if (title === ""){
+                title = "mr nobody";
+            }
+            getTheMovieInfo(title);
             break;
     }
 }
 // bmc: variable with the inquiry bits for song/movie title
 var getTheTitle = [
-		{
+    {
 		type: "input",
 		message: "For what account/song/movie?",
 		name: "title001"
-		}];
+    }];
 
 function getTitle() {
     inquirer.prompt(getTheTitle).then (function (titleGuts) {
@@ -81,19 +77,12 @@ function getTitle() {
         });
 }
 
-// bmc: get the tweets and display them from@MathFour
-function tweetIt() {
-    inquirer.prompt(getTheTitle).then (function (titleGuts) {
-            getTheSongInfo(titleGuts.title001);
-            });
-}
-
 function getTheTweets(account) {
     var params = {screen_name: account};
     client.get('statuses/user_timeline', params, function(error, tweets, response) {
         var i=0;
         if (!error) {
-            console.log("The last 20 tweets for @MathFour are: ");
+            console.log("The last 20 tweets for @" + account + " are: ");
             do{
                 console.log(i+1 + ". " + tweets[i].text);
                 i++;
@@ -101,14 +90,6 @@ function getTheTweets(account) {
         }
     });
 }
-
-
-// bmc: prompt for song and launch function to get the song info
-function singIt() {
-	    inquirer.prompt(getTheTitle).then (function (titleGuts) {
-            getTheSongInfo(titleGuts.title001);
-            });
-        }
 
 // bmc: function to get the information for a song
 function getTheSongInfo(song) {
@@ -132,54 +113,22 @@ function getTheSongInfo(song) {
     });
 }
 
-// bmc: ask user for movie title and launch function to get movie info
-function watchIt() {
-    console.log("launch watchIt function");
-    inquirer.prompt(getTheTitle).then (function (titleGuts) {
-        console.log(titleGuts.title001.trim());
-        if (titleGuts.title001.trim() !== ""){
-            getTheMovieInfo(titleGuts.title001);
-        }
-        else {
-            getTheMovieInfo("mr nobody");
-        }
-    });
-}
-
 // bmc: function to get the information for a movie
 function getTheMovieInfo(movie) {
-/*  * Title of the movie.
-    * Year the movie came out.
-    * IMDB Rating of the movie.
-    * Country where the movie was produced.
-    * Language of the movie.
-    * Plot of the movie.
-    * Actors in the movie.
-    * Rotten Tomatoes URL. */
 
-var url = "http://www.omdbapi.com/?t=" + movie;
-request(url, function(error, response, body) {
+    var url = "http://www.omdbapi.com/?t=" + movie;
+    request(url, function(error, response, body) {
 
-  if (!error && response.statusCode === 200) {
+    if (!error && response.statusCode === 200) {
 
-    console.log("The movie's title is " + JSON.parse(body).Title);
-    console.log("The movie came out in " + JSON.parse(body).Year);
-    console.log("The movie's IMDB rating is " + JSON.parse(body).imdbRating);
-    console.log("The movie's was made in " + JSON.parse(body).Country);
-    console.log("The movie was filmed in " + JSON.parse(body).Language);
-    console.log("The plot is: " + JSON.parse(body).Plot);
-    console.log("The stars of the movie are " + JSON.parse(body).Actors);
-    // console.log("Find out more on the website: " + JSON.parse(body).Website);
-    console.log("Find out more on the website: " + JSON.parse(body).Website);
+        console.log("The movie's title is " + JSON.parse(body).Title);
+        console.log("The movie came out in " + JSON.parse(body).Year);
+        console.log("The movie's IMDB rating is " + JSON.parse(body).imdbRating);
+        console.log("The movie's was made in " + JSON.parse(body).Country);
+        console.log("The movie was filmed in " + JSON.parse(body).Language);
+        console.log("The plot is: " + JSON.parse(body).Plot);
+        console.log("The stars of the movie are " + JSON.parse(body).Actors);
+        console.log("Find out more on the website: " + JSON.parse(body).Website);
   }
 });
-}
-
-function doIt() {
-
-
-
-    inquirer.prompt(getTheTitle).then (function (titleGuts) {
-            getTheSongInfo(titleGuts.title001);
-            });
 }
