@@ -1,8 +1,9 @@
-// bmc: todo Grab the data from keys.js
-// bmc: todo Store keys in variables
-// bmc: todo Write function for do it
+// bmc: Homework by Bon Crowder
+// bmc: see https://github.com/mathfour/liri-node-app for code details
 
+// bmc: I'm still unclear on this "use strict" thing
 'use strict';
+
 // bmc: requirements
 var Twitter = require('twitter');
 var SpotifyWebApi = require('spotify-web-api-node');
@@ -19,7 +20,6 @@ var client = new Twitter({
     access_token_key: twitterKeyFile.twitterKeys.access_token_key,
     access_token_secret: twitterKeyFile.twitterKeys.access_token_secret
 });
-
 
 // bmc: array with the inquiry choices
 var whatToDo = [
@@ -50,26 +50,28 @@ function switchAction(decision) {
     else {
         title = getTitle(callbackGuts);
     }
-    function callbackGuts(inputThing){
-        if (typeof inputThing === "string"){
-            title = inputThing;
+    function callbackGuts(input){
+        if (typeof input === "string"){
+            title = input;
         }
         else {
-            title = inputThing.title001;
+            title = input.title001;
         }
         switch (decision) {
             case "my-tweets" :
                 getTheTweets(title);
-                break;
+            break;
+
             case "spotify-this-song" :
                 getTheSongInfo(title);
-                break;
+            break;
+
             case "movie-this" :
-               if (title === ""){
+                if (title === ""){
                     title = "mr nobody";
                 }
-               getTheMovieInfo(title);
-                break;
+                getTheMovieInfo(title);
+            break;
         }
     }
 
@@ -94,7 +96,6 @@ function getTheTweets(account) {
             console.log("----------------------------");
             console.log("The last 20 tweets for @" + account + " are: ");
             console.log("----------------------------");
-            console.log("The last 20 tweets for @" + account + " are: ");
             do{
                 console.log(i+1 + ". " + tweets[i].text);
                 i++;
