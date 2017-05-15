@@ -38,7 +38,7 @@ inquirer.prompt(whatToDo).then(function(whatTheyWannaDo) {
 function switchAction(decision) {
     var title = "";
     if (decision === "do-what-it-says") {
-        console.log("doing what it says");
+        recordIt("doing what it says");
         fs.readFile("random.txt", "utf8", function (error, data) {
             var dataArr = data.split(",");
             decision = dataArr[0];
@@ -59,10 +59,16 @@ function switchAction(decision) {
         }
         switch (decision) {
             case "my-tweets" :
+                if (title === ""){
+                    title = "MathFour";
+                }
                 getTheTweets(title);
             break;
 
             case "spotify-this-song" :
+                if (title === ""){
+                    title = "the sign ace of base";
+                }
                 getTheSongInfo(title);
             break;
 
@@ -93,14 +99,15 @@ function getTheTweets(account) {
     client.get('statuses/user_timeline', params, function(error, tweets, response) {
         var i=0;
         if (!error) {
-            console.log("----------------------------");
-            console.log("The last 20 tweets for @" + account + " are: ");
-            console.log("----------------------------");
+            recordIt("\n----------------------------");
+            recordIt("\nThe last 20 tweets for @" + account + " are: \n");
             do{
-                console.log(i+1 + ". " + tweets[i].text);
+                recordIt(i+1 + ". " + tweets[i].text);
+                recordIt("\ntweeted on " + tweets[i].created_at);
                 i++;
+
+                recordIt("\n");
             } while (i<20);
-            console.log("----------------------------");
         }
     });
 }
@@ -109,21 +116,17 @@ function getTheTweets(account) {
 function getTheSongInfo(song) {
     spotifyApi.searchTracks(song).then(function (data) {
         var checking = data.body.tracks.items[0].album.artists[0].name;
-            console.log("----------------------------");
-            console.log("This is the artist: ");
-            console.log(data.body.tracks.items[0].album.artists[0].name);
-            console.log("----------------------------");
-            console.log("This is the song's name: ");
-            console.log(data.body.tracks.items[0].name);
-            console.log("----------------------------");
-            console.log("This is preview link of the song from Spotify: ");
-            console.log(data.body.tracks.items[0].preview_url);
-            console.log("----------------------------");
-            console.log("This is album that the song is from: ");
-            console.log(data.body.tracks.items[0].album.name);
-            console.log("----------------------------");
+            recordIt("\n----------------------------");
+            recordIt("\nThis is the artist: ");
+            recordIt(data.body.tracks.items[0].album.artists[0].name);
+            recordIt("\nThis is the song's name: ");
+            recordIt(data.body.tracks.items[0].name);
+            recordIt("\nThis is preview link of the song from Spotify: ");
+            recordIt(data.body.tracks.items[0].preview_url);
+            recordIt("\nThis is album that the song is from: ");
+            recordIt(data.body.tracks.items[0].album.name);
         }).catch(function(err) {
-        console.log('Unfortunately, something has gone wrong.', err.message);
+        recordIt('\nUnfortunately, something has gone wrong.', err.message);
     });
 }
 
@@ -134,15 +137,24 @@ function getTheMovieInfo(movie) {
     request(url, function(error, response, body) {
 
     if (!error && response.statusCode === 200) {
-
-        console.log("The movie's title is " + JSON.parse(body).Title);
-        console.log("The movie came out in " + JSON.parse(body).Year);
-        console.log("The movie's IMDB rating is " + JSON.parse(body).imdbRating);
-        console.log("The movie's was made in " + JSON.parse(body).Country);
-        console.log("The movie was filmed in " + JSON.parse(body).Language);
-        console.log("The plot is: " + JSON.parse(body).Plot);
-        console.log("The stars of the movie are " + JSON.parse(body).Actors);
-        console.log("Find out more on the website: " + JSON.parse(body).Website);
+        recordIt("\n----------------------------");
+        recordIt("\nThe movie's title is " + JSON.parse(body).Title);
+        recordIt("\nThe movie came out in " + JSON.parse(body).Year);
+        recordIt("\nThe movie's IMDB rating is " + JSON.parse(body).imdbRating);
+        recordIt("\nThe movie's was made in " + JSON.parse(body).Country);
+        recordIt("\nThe movie was filmed in " + JSON.parse(body).Language);
+        recordIt("\nThe plot is: " + JSON.parse(body).Plot);
+        recordIt("\nThe stars of the movie are " + JSON.parse(body).Actors);
+        recordIt("\nFind out more on the website: " + JSON.parse(body).Website);
   }
 });
+}
+
+function recordIt(stuffToWrite) {
+    console.log(stuffToWrite);
+    fs.appendFile("log.txt", stuffToWrite, function (err) {
+        if (err) {
+            return console.log("Something went wrong writing to log.txt: " + err);
+        }
+    });
 }

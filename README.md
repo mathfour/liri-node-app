@@ -1,50 +1,56 @@
-# liri-node-app
+# NodeJS Application 
 LIRI Node Application - Homework 8
 
-   
-### What Each Command Does
+Submitted by Bon Crowder
 
-1. `node liri.js my-tweets`
+### How to run the application: 
 
-  * This will show your last 20 tweets and when they were created at in your terminal/bash window.
+Type `node liri.js` and press enter. You will be prompted to choose one of four options.
 
-2. `node liri.js spotify-this-song '<song name here>'`
+#### If you choose `my-tweets`
+  1. You'll be prompted with `For what account/song/movie?`. 
+  2. Enter a twitter account for which you want the last 20 tweets. Do not use the `@` or the full url. Only use the actual account name. For example, for my twitter feed, you would enter `MathFour`. 
+  3. Press enter.
+  4. This will show the last 20 tweets from that account and when they were created at in your terminal/bash window. It will also log these in the `log.txt` file.
+  5. If no twitter handle is provided, the program will default to "MathFour". 
 
-  * This will show the following information about the song in your terminal/bash window
-    * Artist(s)
-    * The song's name
-    * A preview link of the song from Spotify
-    * The album that the song is from
+####  If you choose `spotify-this-song`
+  1. You'll be prompted with `For what account/song/movie?`. 
+  2. Enter a song name and press enter.
+  3. This will show the following information about the song in your terminal/bash window. It will also log these in the `log.txt` file.
 
-  * if no song is provided then your program will default to
-    * "The Sign" by Ace of Base
+      * Artist
+      * The song's name
+      * A preview link of the song from Spotify
+      * The album that the song is from
+  4. If no song is provided then the program will default to "The Sign" by Ace of Base
 
-3. `node liri.js movie-this '<movie name here>'`
+####  If you choose `movie-this`
 
-  * This will output the following information to your terminal/bash window:
+  1. You'll be prompted with `For what account/song/movie?`. 
+  2. Enter a movie name and press enter.
+  3. This will show the following information about the movie in your terminal/bash window. It will also log these in the `log.txt` file.
 
-    ```
-      * Title of the movie.
-      * Year the movie came out.
-      * IMDB Rating of the movie.
-      * Country where the movie was produced.
-      * Language of the movie.
-      * Plot of the movie.
-      * Actors in the movie.
-      * Rotten Tomatoes URL.
-    ```
+      * Title of the movie
+      * Year the movie came out
+      * IMDB Rating of the movie
+      * Country where the movie was produced
+      * Language of the movie
+      * Plot of the movie
+      * Actors in the movie
+      * The URL to get more information about the movie
 
-  * If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
-    * If you haven't watched "Mr. Nobody," then you should: <http://www.imdb.com/title/tt0485947/>
-    * It's on Netflix!
+  * If no movie is provided, the program will output data for the movie 'Mr. Nobody.'
 
-4. `node liri.js do-what-it-says`
-  * Using the `fs` Node package, LIRI will take the text inside of random.txt and then use it to call one of LIRI's commands.
-    * It should run `spotify-this-song` for "I Want it That Way," as follows the text in `random.txt`.
-    * Feel free to change the text in that document to test out the feature for other commands.
-    
-### BONUS
+#### If you choose `do-what-it-says`
+  * Based on the information in the file `random.txt`, one of the three commands will be run. You do not need to input anything further. 
+  * If you want to enter something different in the text file, use the format:
 
-* In addition to logging the data to your terminal/bash window, output the data to a .txt file called `log.txt`.
-* Make sure you append each command you run to the `log.txt` file. 
-* Do not overwrite your file each time you run a command.
+    **\<command>, "<account/song/movie>"**
+
+    where *\<command>* is one of these: 
+    * `my-tweets`
+    * `spotify-this-song`
+    * `movie-this`
+
+    and *<account/song/movie>* is the name of the account for tweets, song for Spotify or movie for OMDB information
